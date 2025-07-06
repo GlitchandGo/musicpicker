@@ -36,23 +36,35 @@
     <!-- Song List View -->
     <div id="song-list-view" class="view">
       <header>
-        <button class="playlist-btn" id="back-to-playlists">🗓️</button>
+        <button class="playlist-btn" id="open-playlists-2">🗓️</button>
         <h1 id="playlist-title">Originals</h1>
         <button class="theme-btn" id="open-themes-2">🎨</button>
       </header>
       <ul id="song-list-ul"></ul>
     </div>
 
-    <!-- Player View -->
+    <!-- Now Playing View -->
     <div id="player-view" class="view">
       <header>
-        <button class="playlist-btn" id="back-to-songs">🗓️</button>
+        <button class="playlist-btn" id="open-playlists-3">🗓️</button>
         <h1>Now Playing</h1>
         <button class="theme-btn" id="open-themes-3">🎨</button>
       </header>
       <h2 id="player-title"></h2>
-      <div class="cover-art"></div>
-      <button class="play-btn" id="play-pause">▶</button>
+      <div class="cover-art" id="cover-art"></div>
+      <div class="controls">
+        <button id="restart-btn">⏮️</button>
+        <button id="play-pause">▶️</button>
+        <button id="go-back-btn">⬅️ Go Back</button>
+      </div>
+      <div class="progress-container">
+        <div class="progress-bar" id="progress-bar"></div>
+      </div>
+      <div class="time-info">
+        <span id="elapsed">00:00</span> /
+        <span id="duration">00:00</span>
+        (<span id="remaining">-00:00</span>)
+      </div>
     </div>
 
     <!-- Theme Selector View -->
@@ -74,25 +86,38 @@
   <audio id="audio"></audio>
 
   <script>
-    // --- Playlists Data ---
+    // --- Helpers ---
+    function formatTime(sec) {
+      const m = Math.floor(sec / 60);
+      const s = Math.floor(sec % 60);
+      return `${String(m).padStart(2,"0")}:${String(s).padStart(2,"0")}`;
+    }
+    function parseTime(str) {
+      const [m,s] = str.split(":").map(Number);
+      return m * 60 + s;
+    }
+
+    // --- Playlists with durations ---
     const playlists = {
       originals: [
-        { title: "Battle Scars and Olive Branches", src: "battlescarsandolivebranches.mp3" },
-        { title: "Crimson Confessions",              src: "crimsonconfessions.mp3" },
-        { title: "Glittering Heart",                 src: "glitteringheart.mp3" },
-        { title: "Inside the Bubble",                src: "insidethebubble.mp3" },
-        { title: "Pixelated Memories",               src: "pixelatedmemories.mp3" },
-        { title: "Raging Fire",                      src: "ragingfire.mp3" },
-        { title: "Rise and Roar",                    src: "riseandroar.mp3" },
-        { title: "Slowed Dreams",                    src: "sloweddreams.mp3" },
-        { title: "Whispered Winds",                  src: "whisperedwinds.mp3" },
-        { title: "Whisper of Strings",               src: "whisperofstrings.mp3" }
+        { title: "Slowed Dreams",             src: "sloweddreams.mp3",             duration: "03:19" },
+        { title: "Pixelated Memories",        src: "pixelatedmemories.mp3",       duration: "02:35" },
+        { title: "Glittering Heart",          src: "glitteringheart.mp3",          duration: "02:30" },
+        { title: "Crimson Confessions",       src: "crimsonconfessions.mp3",       duration: "02:31" },
+        { title: "Battle Scars and Olive Branches", src: "battlescarsandolivebranches.mp3", duration: "01:26" },
+        { title: "Rise and Roar",             src: "riseandroar.mp3",             duration: "02:07" },
+        { title: "Inside the Bubble",         src: "insidethebubble.mp3",         duration: "02:40" },
+        { title: "Whisper of Strings",        src: "whisperofstrings.mp3",        duration: "02:40" },
+        { title: "Whispered Winds",           src: "whisperedwinds.mp3",          duration: "02:58" },
+        { title: "Raging Fire",               src: "ragingfire.mp3",               duration: "03:07" }
       ],
-      swifties: []  // under construction
+      swifties: []
     };
 
     // --- State & Elements ---
     let currentPlaylist = localStorage.getItem("currentPlaylist") || null;
+    let currentTrackIndex = 0;
+    let currentTrackLength = 0;
     const audio           = document.getElementById("audio");
     const homeView        = document.getElementById("home-view");
     const playlistView    = document.getElementById("playlist-view");
@@ -101,6 +126,15 @@
     const themeView       = document.getElementById("theme-view");
     const ulSongs         = document.getElementById("song-list-ul");
     const playlistTitle   = document.getElementById("playlist-title");
+    const titleDisplay    = document.getElementById("player-title");
+    const coverArt        = document.getElementById("cover-art");
+    const progressBar     = document.getElementById("progress-bar");
+    const elapsedSpan     = document.getElementById("elapsed");
+    const durationSpan    = document.getElementById("duration");
+    const remainingSpan   = document.getElementById("remaining");
+    const playPauseBtn    = document.getElementById("play-pause");
+    const restartBtn      = document.getElementById("restart-btn");
+    const goBackBtn       = document.getElementById("go-back-btn");
 
     function showView(view) {
       [homeView, playlistView, songListView, playerView, themeView]
@@ -110,7 +144,7 @@
 
     function populateSongList() {
       ulSongs.innerHTML = "";
-      playlistTitle.textContent = 
+      playlistTitle.textContent =
         currentPlaylist.charAt(0).toUpperCase() + currentPlaylist.slice(1);
       playlists[currentPlaylist].forEach((track, i) => {
         const li = document.createElement("li");
@@ -125,9 +159,19 @@
     }
 
     function loadSong(index) {
-      const { title, src } = playlists[currentPlaylist][index];
-      document.getElementById("player-title").textContent = title;
-      audio.src = src;
+      const track = playlists[currentPlaylist][index];
+      currentTrackIndex = index;
+      currentTrackLength = parseTime(track.duration);
+
+      titleDisplay.textContent = track.title;
+      coverArt.style.backgroundImage = "url('default_cover.png')";
+      durationSpan.textContent = track.duration;
+      elapsedSpan.textContent  = "00:00";
+      remainingSpan.textContent = "-" + track.duration;
+      progressBar.style.width = "0%";
+
+      audio.src = track.src;
+      audio.currentTime = 0;
       audio.play();
       showView(playerView);
     }
@@ -143,9 +187,14 @@
     }
 
     // Playlist selector
-    document.getElementById("open-playlists").onclick       = () => showView(playlistView);
-    document.getElementById("close-playlists").onclick      = () => showView(homeView);
-    document.getElementById("back-to-playlists").onclick    = () => showView(playlistView);
+    document.getElementById("open-playlists").onclick   =
+    document.getElementById("open-playlists-2").onclick =
+    document.getElementById("open-playlists-3").onclick = () => showView(playlistView);
+
+    document.getElementById("close-playlists").onclick = () => {
+      localStorage.setItem("currentPlaylist", currentPlaylist);
+      showView(homeView);
+    };
 
     // Choose Originals
     document.querySelector("[data-playlist='originals']").onclick = () => {
@@ -154,18 +203,6 @@
       populateSongList();
       showView(songListView);
     };
-
-    // Back to songs from player
-    document.getElementById("back-to-songs").onclick = () => showView(songListView);
-
-    // Play/Pause
-    const playBtn = document.getElementById("play-pause");
-    playBtn.onclick = () => {
-      if (audio.paused) audio.play();
-      else audio.pause();
-    };
-    audio.onplay  = () => { playBtn.textContent = "⏸"; playerView.classList.add("playing"); };
-    audio.onpause = () => { playBtn.textContent = "▶";  playerView.classList.remove("playing"); };
 
     // Theme selector (unchanged)
     document.getElementById("open-themes").onclick   =
@@ -178,6 +215,42 @@
         showView(homeView);
       };
     });
+
+    // Audio time & progress updates
+    audio.ontimeupdate = () => {
+      const elapsed = audio.currentTime;
+      const remain  = currentTrackLength - elapsed;
+
+      elapsedSpan.textContent   = formatTime(elapsed);
+      remainingSpan.textContent = "-" + formatTime(remain);
+      progressBar.style.width   = `${(elapsed / currentTrackLength) * 100}%`;
+    };
+
+    // Auto-advance
+    audio.onended = () => {
+      const next = currentTrackIndex + 1;
+      if (next < playlists[currentPlaylist].length) {
+        loadSong(next);
+      }
+    };
+
+    // Play/pause toggle
+    playPauseBtn.onclick = () => {
+      if (audio.paused) audio.play();
+      else audio.pause();
+    };
+    audio.onplay  = () => playPauseBtn.textContent = "⏸️";
+    audio.onpause = () => playPauseBtn.textContent = "▶️";
+
+    // Restart track
+    restartBtn.onclick = () => {
+      audio.currentTime = 0;
+      audio.play();
+    };
+
+    // Go back to song list
+    goBackBtn.onclick = () => showView(songListView);
+
   </script>
 </body>
 </html>
