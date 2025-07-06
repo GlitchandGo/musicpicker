@@ -2,16 +2,43 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Minimal Music Player</title>
+  <title>Music Player</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body class="theme-basic">
   <div class="app">
-    <!-- Song List View -->
-    <div id="song-list" class="view active">
+
+    <!-- Home View -->
+    <div id="home-view" class="view active">
       <header>
-        <h1>Song Picker Thing</h1>
+        <button class="playlist-btn" id="open-playlists">🗓️</button>
+        <h1>Music Player</h1>
         <button class="theme-btn" id="open-themes">🎨</button>
+      </header>
+      <div class="home-content">
+        <h2>Welcome to Music Player!</h2>
+        <p>Please select a playlist from the 🗓️ on the Top Left!</p>
+      </div>
+    </div>
+
+    <!-- Playlist Selector View -->
+    <div id="playlist-view" class="view">
+      <header>
+        <h1>Playlists</h1>
+        <button class="playlist-btn" id="close-playlists">✕</button>
+      </header>
+      <ul>
+        <li data-playlist="originals">Originals</li>
+        <li class="disabled">Swifties ⚒️</li>
+      </ul>
+    </div>
+
+    <!-- Song List View -->
+    <div id="song-list-view" class="view">
+      <header>
+        <button class="playlist-btn" id="back-to-playlists">🗓️</button>
+        <h1 id="playlist-title">Originals</h1>
+        <button class="theme-btn" id="open-themes-2">🎨</button>
       </header>
       <ul id="song-list-ul"></ul>
     </div>
@@ -19,8 +46,9 @@
     <!-- Player View -->
     <div id="player-view" class="view">
       <header>
+        <button class="playlist-btn" id="back-to-songs">🗓️</button>
         <h1>Now Playing</h1>
-        <button class="theme-btn" id="open-themes-2">🎨</button>
+        <button class="theme-btn" id="open-themes-3">🎨</button>
       </header>
       <h2 id="player-title"></h2>
       <div class="cover-art"></div>
@@ -40,80 +68,114 @@
         <li data-theme="elemental">elemental</li>
       </ul>
     </div>
+
   </div>
 
   <audio id="audio"></audio>
 
   <script>
-    // --- data & state ---
-    const songs = Array.from({ length: 10 }, (_, i) => ({
-      title: String(i + 1),
-      src: 'your_song.mp4'
-    }));
-    let currentIndex = null;
-    const audio = document.getElementById('audio');
+    // --- Playlists Data ---
+    const playlists = {
+      originals: [
+        { title: "Battle Scars and Olive Branches", src: "battlescarsandolivebranches.mp3" },
+        { title: "Crimson Confessions",              src: "crimsonconfessions.mp3" },
+        { title: "Glittering Heart",                 src: "glitteringheart.mp3" },
+        { title: "Inside the Bubble",                src: "insidethebubble.mp3" },
+        { title: "Pixelated Memories",               src: "pixelatedmemories.mp3" },
+        { title: "Raging Fire",                      src: "ragingfire.mp3" },
+        { title: "Rise and Roar",                    src: "riseandroar.mp3" },
+        { title: "Slowed Dreams",                    src: "sloweddreams.mp3" },
+        { title: "Whispered Winds",                  src: "whisperedwinds.mp3" },
+        { title: "Whisper of Strings",               src: "whisperofstrings.mp3" }
+      ],
+      swifties: []  // under construction
+    };
 
-    // --- views & elements ---
-    const songListView = document.getElementById('song-list');
-    const playerView   = document.getElementById('player-view');
-    const themeView    = document.getElementById('theme-view');
-    const bodyEl       = document.body;
+    // --- State & Elements ---
+    let currentPlaylist = localStorage.getItem("currentPlaylist") || null;
+    const audio           = document.getElementById("audio");
+    const homeView        = document.getElementById("home-view");
+    const playlistView    = document.getElementById("playlist-view");
+    const songListView    = document.getElementById("song-list-view");
+    const playerView      = document.getElementById("player-view");
+    const themeView       = document.getElementById("theme-view");
+    const ulSongs         = document.getElementById("song-list-ul");
+    const playlistTitle   = document.getElementById("playlist-title");
 
     function showView(view) {
-      [songListView, playerView, themeView].forEach(v => v.classList.remove('active'));
-      view.classList.add('active');
+      [homeView, playlistView, songListView, playerView, themeView]
+        .forEach(v => v.classList.remove("active"));
+      view.classList.add("active");
     }
 
-    // Populate song list
-    const listEl = document.getElementById('song-list-ul');
-    songs.forEach((song, idx) => {
-      const li = document.createElement('li');
-      li.textContent = song.title;
-      li.onclick = () => {
-        loadSong(idx);
-        showView(playerView);
-      };
-      listEl.appendChild(li);
-      if (idx < songs.length - 1) {
-        const hr = document.createElement('hr');
-        listEl.appendChild(hr);
-      }
-    });
+    function populateSongList() {
+      ulSongs.innerHTML = "";
+      playlistTitle.textContent = 
+        currentPlaylist.charAt(0).toUpperCase() + currentPlaylist.slice(1);
+      playlists[currentPlaylist].forEach((track, i) => {
+        const li = document.createElement("li");
+        li.textContent = track.title;
+        li.onclick = () => loadSong(i);
+        ulSongs.appendChild(li);
+        if (i < playlists[currentPlaylist].length - 1) {
+          const hr = document.createElement("hr");
+          ulSongs.appendChild(hr);
+        }
+      });
+    }
 
-    // Load & play a song
     function loadSong(index) {
-      currentIndex = index;
-      const { title, src } = songs[index];
-      document.getElementById('player-title').textContent = title;
+      const { title, src } = playlists[currentPlaylist][index];
+      document.getElementById("player-title").textContent = title;
       audio.src = src;
       audio.play();
+      showView(playerView);
     }
 
-    // Play/Pause toggle
-    const playBtn = document.getElementById('play-pause');
+    // --- Event Bindings ---
+
+    // Initial view
+    if (currentPlaylist === "originals") {
+      populateSongList();
+      showView(songListView);
+    } else {
+      showView(homeView);
+    }
+
+    // Playlist selector
+    document.getElementById("open-playlists").onclick       = () => showView(playlistView);
+    document.getElementById("close-playlists").onclick      = () => showView(homeView);
+    document.getElementById("back-to-playlists").onclick    = () => showView(playlistView);
+
+    // Choose Originals
+    document.querySelector("[data-playlist='originals']").onclick = () => {
+      currentPlaylist = "originals";
+      localStorage.setItem("currentPlaylist", currentPlaylist);
+      populateSongList();
+      showView(songListView);
+    };
+
+    // Back to songs from player
+    document.getElementById("back-to-songs").onclick = () => showView(songListView);
+
+    // Play/Pause
+    const playBtn = document.getElementById("play-pause");
     playBtn.onclick = () => {
       if (audio.paused) audio.play();
       else audio.pause();
     };
-    audio.onplay  = () => {
-      playBtn.textContent = '⏸';
-      playerView.classList.add('playing');
-    };
-    audio.onpause = () => {
-      playBtn.textContent = '▶';
-      playerView.classList.remove('playing');
-    };
+    audio.onplay  = () => { playBtn.textContent = "⏸"; playerView.classList.add("playing"); };
+    audio.onpause = () => { playBtn.textContent = "▶";  playerView.classList.remove("playing"); };
 
-    // Theme navigation
-    document.getElementById('open-themes').onclick   = () => showView(themeView);
-    document.getElementById('open-themes-2').onclick = () => showView(themeView);
-    document.getElementById('close-themes').onclick  = () => showView(songListView);
-
-    // Apply theme
-    document.querySelectorAll('#theme-view li').forEach(li => {
+    // Theme selector (unchanged)
+    document.getElementById("open-themes").onclick   =
+    document.getElementById("open-themes-2").onclick =
+    document.getElementById("open-themes-3").onclick = () => showView(themeView);
+    document.getElementById("close-themes").onclick = () => showView(homeView);
+    document.querySelectorAll("#theme-view li").forEach(li => {
       li.onclick = () => {
-        bodyEl.className = `theme-${li.dataset.theme}`;
-        showView(songListView);
+        document.body.className = `theme-${li.dataset.theme}`;
+        showView(homeView);
       };
     });
   </script>
