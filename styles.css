@@ -1,225 +1,222 @@
 /* styles.css */
 
-/*=============================================
+/*---------------------------------------------
   Theme Variables
-=============================================*/
+---------------------------------------------*/
 :root {
-  --bg: #fff;
+  --bg: #fff; 
   --text: #000;
   --accent: #000;
-  --pulse: rgba(0, 0, 0, 0.2);
-  --btn-gradient: linear-gradient(#e0e0e0, #c0c0c0);
+  --pulse: rgba(0,0,0,0.2);
+  --btn-gradient: linear-gradient(#e0e0e0,#c0c0c0);
   --btn-text: var(--text);
 }
 
 .theme-basic {
-  --bg: #fff;
-  --text: #000;
-  --accent: #000;
-  --pulse: rgba(0, 0, 0, 0.2);
-  --btn-gradient: linear-gradient(#e0e0e0, #c0c0c0);
+  --bg: #fff; --text: #000; --accent: #000;
+  --pulse: rgba(0,0,0,0.2);
+  --btn-gradient: linear-gradient(#e0e0e0,#c0c0c0);
   --btn-text: var(--text);
 }
 
 .theme-kawaii {
-  --bg: linear-gradient(to bottom, #ffccee, #ff66aa);
-  --text: #ff33cc;
-  --accent: #ffaacc;
-  --pulse: rgba(255, 51, 204, 0.5);
-  --btn-gradient: linear-gradient(#ffddee, #ff99cc);
+  --bg: linear-gradient(to bottom, #ffccee,#ff66aa);
+  --text: #ff33cc; --accent: #ffaacc;
+  --pulse: rgba(255,51,204,0.5);
+  --btn-gradient: linear-gradient(#ffddee,#ff99cc);
   --btn-text: #880044;
 }
 
 .theme-neon {
-  --bg: #0a0a0a;
-  --text: #0ff;
-  --accent: #0ff;
-  --pulse: rgba(0, 255, 255, 0.5);
-  --btn-gradient: linear-gradient(#0a0a0a, #111);
+  --bg: #0a0a0a; --text: #0ff; --accent: #0ff;
+  --pulse: rgba(0,255,255,0.5);
+  --btn-gradient: linear-gradient(#0a0a0a,#111);
   --btn-text: #0ff;
 }
 
 .theme-elemental {
-  --bg: #1a1f00;
-  --text: #fff;
-  --accent: #ff0;
-  --pulse: rgba(255, 255, 0, 0.5);
-  --btn-gradient: linear-gradient(#2a2f00, #1a1f00);
+  --bg: #1a1f00; --text: #fff; --accent: #ff0;
+  --pulse: rgba(255,255,0,0.5);
+  --btn-gradient: linear-gradient(#2a2f00,#1a1f00);
   --btn-text: var(--text);
 }
 
-
-/*=============================================
-  Global Styles
-=============================================*/
+/*---------------------------------------------
+  Global & Layout
+---------------------------------------------*/
 body {
-  margin: 0;
-  font-family: sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  position: relative;
-  overflow: hidden;
+  margin:0; font-family:sans-serif;
+  background:var(--bg); color:var(--text);
+  display:flex; justify-content:center;
+  align-items:center; height:100vh;
+  position:relative; overflow:hidden;
 }
 
 .app {
-  position: relative;  /* for z-stack over backgrounds */
-  z-index: 1;
-  width: 300px;
-  background: var(--bg);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  border-radius: 8px;
-  overflow: hidden;
+  position:relative; z-index:1;
+  width:300px; background:var(--bg);
+  box-shadow:0 4px 12px rgba(0,0,0,0.1);
+  border-radius:8px; overflow:hidden;
 }
 
 header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 12px;
-  background: var(--accent);
-  color: var(--bg);
+  display:flex; justify-content:space-between;
+  align-items:center; padding:12px;
+  background:var(--accent); color:var(--bg);
 }
 
 header h1 {
-  margin: 0;
-  font-size: 16px;
+  margin:0; font-size:16px;
 }
 
-/* Unified Button Styles */
+/*---------------------------------------------
+  Buttons & Icons
+---------------------------------------------*/
 button,
 .theme-btn,
-.play-btn {
-  background: var(--btn-gradient);
-  color: var(--btn-text);
-  border: none;
-  border-radius: 4px;       /* slight rounding */
-  padding: 8px 12px;
-  font-size: 14px;
-  font-weight: bold;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  cursor: pointer;
-  transition: transform 0.1s ease, box-shadow 0.1s ease;
+.play-btn,
+.playlist-btn {
+  background:var(--btn-gradient);
+  color:var(--btn-text);
+  border:none;
+  border-radius:4px;
+  padding:8px 12px;
+  font-size:14px;
+  font-weight:bold;
+  box-shadow:0 4px 8px rgba(0,0,0,0.1);
+  cursor:pointer;
+  transition:transform 0.1s ease, box-shadow 0.1s ease;
 }
 
 button:active,
 .theme-btn:active,
-.play-btn:active {
-  transform: scale(0.97);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+.play-btn:active,
+.playlist-btn:active {
+  transform:scale(0.97);
+  box-shadow:0 2px 4px rgba(0,0,0,0.2);
 }
 
-/* View Container */
+.theme-btn,
+.playlist-btn {
+  background:none;
+  padding:4px;
+  box-shadow:none;
+  font-size:18px;
+}
+
+/*---------------------------------------------
+  Views
+---------------------------------------------*/
 .view {
-  display: none;
-  padding: 16px;
+  display:none; padding:16px;
 }
 
 .view.active {
-  display: block;
+  display:block;
+}
+
+/* Home Screen */
+.home-content {
+  text-align:center;
+  margin-top:40px;
+}
+
+.home-content h2 {
+  margin-bottom:8px;
+}
+
+/* Playlist Selector */
+#playlist-view ul {
+  list-style:none; padding:0; margin:0;
+}
+
+#playlist-view li {
+  padding:12px 0;
+  cursor:pointer;
+  color:var(--text);
+}
+
+#playlist-view li.disabled {
+  opacity:0.5;
+  cursor:default;
+}
+
+#playlist-view li:not(.disabled):hover {
+  color:var(--accent);
 }
 
 /* Song List */
-#song-list ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
+#song-list-view ul {
+  list-style:none; padding:0; margin:0;
 }
 
-#song-list li {
-  padding: 12px 0;
-  cursor: pointer;
-  color: var(--text);
+#song-list-view li {
+  padding:12px 0; cursor:pointer;
+  color:var(--text);
 }
 
-#song-list li:hover {
-  color: var(--accent);
+#song-list-view li:hover {
+  color:var(--accent);
 }
 
-#song-list hr {
-  margin: 0;
-  border: 0;
-  border-top: 1px solid var(--accent);
+#song-list-view hr {
+  margin:0; border:0;
+  border-top:1px solid var(--accent);
 }
 
 /* Player View */
-#player-view h1,
 #player-view h2 {
-  text-align: center;
-  margin: 0 0 16px;
+  text-align:center; margin:0 0 16px;
 }
 
 .cover-art {
-  width: 200px;
-  height: 200px;
-  background: #fff;
-  border: 2px solid #000;
-  margin: 0 auto 16px;
-  border-radius: 4px;
+  width:200px; height:200px;
+  background:#fff; border:2px solid #000;
+  margin:0 auto 16px; border-radius:4px;
 }
 
 .play-btn {
-  display: block;
-  margin: 0 auto;
-  font-size: 32px;
-  background: none;
-  border: none;
-  color: var(--text);
+  display:block; margin:0 auto;
+  font-size:32px; background:none;
+  box-shadow:none; padding:0;
+  color:var(--text);
 }
 
 @keyframes pulse {
-  0%, 100% { transform: scale(1); }
-  50%       { transform: scale(1.05); }
+  0%,100% { transform:scale(1); }
+  50%     { transform:scale(1.05); }
 }
 
 .playing .cover-art {
-  animation: pulse 1s infinite ease-in-out;
-  box-shadow: 0 0 8px var(--pulse);
+  animation:pulse 1s infinite ease-in-out;
+  box-shadow:0 0 8px var(--pulse);
 }
 
 /* Theme Selector */
 #theme-view ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
+  list-style:none; padding:0; margin:0;
 }
 
 #theme-view li {
-  padding: 12px 0;
-  cursor: pointer;
-  color: var(--text);
-  text-transform: capitalize;
+  padding:12px 0; cursor:pointer;
+  color:var(--text); text-transform:capitalize;
 }
 
 #theme-view li:hover {
-  color: var(--accent);
+  color:var(--accent);
 }
 
-
-/*=============================================
-  Kawaii Hearts Overlay
-=============================================*/
+/* Kawaii Hearts Overlay */
 body.theme-kawaii::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
+  content:""; position:fixed; inset:0;
+  z-index:0; pointer-events:none;
   background-image:
     radial-gradient(circle at 10px 10px, #ff99cc 1px, transparent 0),
     radial-gradient(circle at 25px 25px, #ff99cc 1px, transparent 0);
-  background-size: 35px 35px;
-  opacity: 0.15;
+  background-size:35px 35px; opacity:0.15;
 }
 
-
-/*=============================================
-  Neon Theme Effects
-=============================================*/
-/* Neon aura on container */
+/* Neon Effects */
 body.theme-neon .app {
   box-shadow:
     0 0 12px var(--accent),
@@ -227,45 +224,25 @@ body.theme-neon .app {
     0 0 36px var(--accent);
 }
 
-/* Neon text glow */
 body.theme-neon h1,
 body.theme-neon h2,
 body.theme-neon .play-btn {
-  color: var(--text);
   text-shadow:
     0 0 5px var(--accent),
     0 0 10px var(--accent),
     0 0 20px var(--accent);
 }
 
-/* Steam/fog rising effect */
 body.theme-neon::after {
-  content: "";
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: 40%;
-  background: radial-gradient(
-    ellipse at bottom,
-    rgba(255,255,255,0.1),
-    transparent
-  );
-  animation: steamRise 6s infinite ease-in-out;
-  pointer-events: none;
-  z-index: 0;
+  content:""; position:fixed; bottom:0; left:0;
+  width:100%; height:40%;
+  background:radial-gradient(ellipse at bottom, rgba(255,255,255,0.1), transparent);
+  animation:steamRise 6s infinite ease-in-out;
+  pointer-events:none; z-index:0;
 }
 
 @keyframes steamRise {
-  0%   { transform: translateY(0); opacity: 0.1; }
-  50%  { transform: translateY(-10px); opacity: 0.2; }
-  100% { transform: translateY(0); opacity: 0.1; }
-}
-
-
-/*=============================================
-  Elemental Theme (placeholder)
-=============================================*/
-body.theme-elemental {
-  /* Variables are defined above; add unique elemental flourishes here if desired */
+  0%   { transform:translateY(0);   opacity:0.1; }
+  50%  { transform:translateY(-10px); opacity:0.2; }
+  100% { transform:translateY(0);   opacity:0.1; }
 }
