@@ -1,1 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Minimal Music Player</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body class="theme-basic">
+  <div class="app">
+    <!-- Song List View -->
+    <div id="song-list" class="view active">
+      <header>
+        <h1>Song Picker Thing</h1>
+        <button class="theme-btn" id="open-themes">🎨</button>
+      </header>
+      <ul id="song-list-ul"></ul>
+    </div>
 
+    <!-- Player View -->
+    <div id="player-view" class="view">
+      <header>
+        <h1>Now Playing</h1>
+        <button class="theme-btn" id="open-themes-2">🎨</button>
+      </header>
+      <h2 id="player-title"></h2>
+      <div class="cover-art"></div>
+      <button class="play-btn" id="play-pause">▶</button>
+    </div>
+
+    <!-- Theme Selector View -->
+    <div id="theme-view" class="view">
+      <header>
+        <h1>Themes</h1>
+        <button class="theme-btn" id="close-themes">✕</button>
+      </header>
+      <ul>
+        <li data-theme="basic">basic</li>
+        <li data-theme="kawaii">kawaii</li>
+        <li data-theme="neon">neon</li>
+        <li data-theme="elemental">elemental</li>
+      </ul>
+    </div>
+  </div>
+
+  <audio id="audio"></audio>
+
+  <script>
+    // --- data & state ---
+    const songs = Array.from({ length: 10 }, (_, i) => ({
+      title: String(i + 1),
+      src: 'your_song.mp4'
+    }));
+    let currentIndex = null;
+    const audio = document.getElementById('audio');
+
+    // --- views & elements ---
+    const songListView = document.getElementById('song-list');
+    const playerView   = document.getElementById('player-view');
+    const themeView    = document.getElementById('theme-view');
+    const bodyEl       = document.body;
+
+    function showView(view) {
+      [songListView, playerView, themeView].forEach(v => v.classList.remove('active'));
+      view.classList.add('active');
+    }
+
+    // Populate song list
+    const listEl = document.getElementById('song-list-ul');
+    songs.forEach((song, idx) => {
+      const li = document.createElement('li');
+      li.textContent = song.title;
+      li.onclick = () => {
+        loadSong(idx);
+        showView(playerView);
+      };
+      listEl.appendChild(li);
+      if (idx < songs.length - 1) {
+        const hr = document.createElement('hr');
+        listEl.appendChild(hr);
+      }
+    });
+
+    // Load & play a song
+    function loadSong(index) {
+      currentIndex = index;
+      const { title, src } = songs[index];
+      document.getElementById('player-title').textContent = title;
+      audio.src = src;
+      audio.play();
+    }
+
+    // Play/Pause toggle
+    const playBtn = document.getElementById('play-pause');
+    playBtn.onclick = () => {
+      if (audio.paused) audio.play();
+      else audio.pause();
+    };
+    audio.onplay  = () => {
+      playBtn.textContent = '⏸';
+      playerView.classList.add('playing');
+    };
+    audio.onpause = () => {
+      playBtn.textContent = '▶';
+      playerView.classList.remove('playing');
+    };
+
+    // Theme navigation
+    document.getElementById('open-themes').onclick   = () => showView(themeView);
+    document.getElementById('open-themes-2').onclick = () => showView(themeView);
+    document.getElementById('close-themes').onclick  = () => showView(songListView);
+
+    // Apply theme
+    document.querySelectorAll('#theme-view li').forEach(li => {
+      li.onclick = () => {
+        bodyEl.className = `theme-${li.dataset.theme}`;
+        showView(songListView);
+      };
+    });
+  </script>
+</body>
+</html>
