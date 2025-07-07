@@ -1,10 +1,9 @@
 /* styles.css */
-
 /*---------------------------------------------
-  Theme Variables
+  Theme Variables & Palettes
 ---------------------------------------------*/
 :root {
-  --bg: #fff; 
+  --bg: #fff;
   --text: #000;
   --accent: #000;
   --pulse: rgba(0,0,0,0.2);
@@ -12,8 +11,76 @@
   --btn-text: var(--text);
 }
 
-/* Themes (basic, kawaii, neon, elemental) omitted for brevity */
-/* Copy your previous theme sections here... */
+/* Basic */
+.theme-basic {
+  --bg: #fff; --text: #000; --accent: #000;
+  --pulse: rgba(0,0,0,0.2);
+  --btn-gradient: linear-gradient(#e0e0e0,#c0c0c0);
+  --btn-text: #000;
+}
+
+/* Kawaii */
+.theme-kawaii {
+  --bg: linear-gradient(to bottom, #ffccee,#ff66aa);
+  --text: #ff33cc; --accent: #ffaacc;
+  --pulse: rgba(255,51,204,0.5);
+  --btn-gradient: linear-gradient(#ffddee,#ff99cc);
+  --btn-text: #880044;
+}
+
+/* Neon */
+.theme-neon {
+  --bg: #0a0a0a; --text: #0ff; --accent: #0ff;
+  --pulse: rgba(0,255,255,0.5);
+  --btn-gradient: linear-gradient(#0a0a0a,#111);
+  --btn-text: #0ff;
+}
+
+/* Elemental */
+.theme-elemental {
+  --bg: #1a1f00; --text: #fff; --accent: #ff0;
+  --pulse: rgba(255,255,0,0.5);
+  --btn-gradient: linear-gradient(#2a2f00,#1a1f00);
+  --btn-text: #fff;
+}
+
+/* Cat Café */
+.theme-catcafe {
+  --bg: linear-gradient(to bottom, #fff7f2,#ffd6e8);
+  --text: #5c3a21; --accent: #a9746e;
+  --pulse: rgba(169,116,110,0.3);
+  --btn-gradient: linear-gradient(#ffe6ec,#f7d5cc);
+  --btn-text: #5c3a21;
+}
+body.theme-catcafe::after {
+  content:""; position:fixed; inset:0;
+  background-image:
+    radial-gradient(circle, rgba(92,58,33,0.1) 1px, transparent 1px);
+  background-size:30px 30px; opacity:0.05;
+  pointer-events:none;
+}
+
+/* Starlight Terminal */
+.theme-starlight {
+  --bg: #0e0e1a; --text: #ccf2ff; --accent: #00ffff;
+  --pulse: rgba(0,255,255,0.3);
+  --btn-gradient: linear-gradient(#0e0e1a,#1a1a2e);
+  --btn-text: #00ffff;
+}
+body.theme-starlight::after {
+  content:""; position:fixed; inset:0;
+  background: url('starfield.png') repeat;
+  opacity:0.1; pointer-events:none;
+}
+
+/* Terracotta Bloom */
+.theme-terracotta {
+  --bg: linear-gradient(to bottom, #f4ede4,#ffeede);
+  --text: #4e2f28; --accent: #d1876c;
+  --pulse: rgba(209,135,108,0.3);
+  --btn-gradient: linear-gradient(#f4ede4,#e7d8cc);
+  --btn-text: #4e2f28;
+}
 
 /*---------------------------------------------
   Global & Layout
@@ -23,22 +90,19 @@ body {
   background:var(--bg); color:var(--text);
   display:flex; justify-content:center;
   align-items:center; height:100vh;
-  position:relative; overflow:hidden;
+  overflow:hidden;
 }
-
 .app {
-  position:relative; z-index:1;
   width:300px; background:var(--bg);
   box-shadow:0 4px 12px rgba(0,0,0,0.1);
   border-radius:8px; overflow:hidden;
+  position:relative;
 }
-
 header {
   display:flex; justify-content:space-between;
   align-items:center; padding:12px;
   background:var(--accent); color:var(--bg);
 }
-
 header h1 {
   margin:0; font-size:16px;
 }
@@ -51,13 +115,12 @@ button,
 .play-btn,
 .playlist-btn {
   background:var(--btn-gradient);
-  color:var(--btn-text);
-  border:none; border-radius:4px;
-  padding:8px; font-size:14px; font-weight:bold;
+  color:var(--btn-text); border:none;
+  border-radius:4px; padding:8px;
+  font-size:14px; font-weight:bold;
   box-shadow:0 4px 8px rgba(0,0,0,0.1);
   cursor:pointer; transition:0.1s;
 }
-
 .theme-btn,
 .playlist-btn {
   background:none; box-shadow:none; padding:4px;
@@ -70,47 +133,43 @@ button,
 .view { display:none; padding:16px; }
 .view.active { display:block; }
 
-/* Home Screen */
-.home-content { text-align:center; margin-top:40px; }
-.home-content h2 { margin-bottom:8px; }
+/* Home */
+.home-content { text-align:center; margin-top:40px; 
+  animation:breathe 4s ease-in-out infinite;
+}
+.home-content h2 { margin:0; font-size:14px; }
 
-/* Playlist Selector */
+/* Playlist & Song List & Theme */
 #playlist-view ul,
 #song-list-view ul,
-#theme-view ul {
-  list-style:none; padding:0; margin:0;
-}
-
-#playlist-view li {
+#theme-view ul { list-style:none; padding:0; margin:0; }
+#playlist-view li,
+#song-list-view li,
+#theme-view li {
   padding:12px 0; cursor:pointer; color:var(--text);
 }
 #playlist-view li.disabled { opacity:0.5; cursor:default; }
-#playlist-view li:not(.disabled):hover { color:var(--accent); }
-
-/* Song List */
-#song-list-view li {
-  padding:12px 0; cursor:pointer; color:var(--text);
+#playlist-view li:not(.disabled):hover,
+#song-list-view li:hover,
+#theme-view li:hover {
+  color:var(--accent);
 }
-#song-list-view li:hover { color:var(--accent); }
-#song-list-view hr { margin:0; border:0; border-top:1px solid var(--accent); }
+#song-list-view hr {
+  margin:0; border:0; border-top:1px solid var(--accent);
+}
 
 /* Now Playing */
 #player-view h2 { text-align:center; margin:8px 0; }
-
 .cover-art {
-  width:200px; height:200px;
-  background:#ddd url('default_cover.png') center/cover no-repeat;
-  margin:0 auto 16px; border-radius:4px;
+  width:200px; height:200px; margin:0 auto 16px;
+  background: #ddd url('default_cover.png') center/cover no-repeat;
+  border-radius:4px;
 }
-
 .controls {
   display:flex; justify-content:center; gap:12px;
   margin-bottom:12px;
 }
-
-.controls button {
-  font-size:18px; padding:8px 12px;
-}
+.controls button { font-size:18px; }
 
 /* Progress Bar */
 .progress-container {
@@ -119,7 +178,6 @@ button,
   border-radius:3px; overflow:hidden;
   margin-bottom:8px;
 }
-
 .progress-bar {
   height:100%; width:0%;
   background:var(--accent);
@@ -129,13 +187,13 @@ button,
 /* Time Info */
 .time-info {
   text-align:center; font-size:12px;
-  color:var(--text);
-  margin-bottom:12px;
+  color:var(--text); margin-bottom:12px;
 }
 
-/* Theme Selector */
-#theme-view li {
-  padding:12px 0; cursor:pointer;
-  color:var(--text); text-transform:capitalize;
+/*---------------------------------------------
+  Animations
+---------------------------------------------*/
+@keyframes breathe {
+  0%,100% { transform: translateY(0); }
+  50%     { transform: translateY(-3px); }
 }
-#theme-view li:hover { color:var(--accent); }
