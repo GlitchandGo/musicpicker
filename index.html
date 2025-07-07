@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Sonic Sanctuary</title>
+  <title>Music Player</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body class="theme-basic">
@@ -13,11 +13,12 @@
     <div id="home-view" class="view active">
       <header>
         <button class="playlist-btn" id="open-playlists">🗓️</button>
-        <h1>Welcome to the Sonic Sanctuary</h1>
+        <h1>Music Player</h1>
         <button class="theme-btn" id="open-themes">🎨</button>
       </header>
       <div class="home-content">
-        <h2 id="home-subtitle">Choose your playlist to begin your journey 🎧</h2>
+        <h2>Welcome to Music Player!</h2>
+        <p>Please select a playlist from the 🗓️ on the Top Left!</p>
       </div>
     </div>
 
@@ -36,22 +37,22 @@
     <!-- Song List View -->
     <div id="song-list-view" class="view">
       <header>
-        <button class="playlist-btn" id="open-playlists-2">🗓️</button>
+        <button class="playlist-btn" id="back-to-playlists">🗓️</button>
         <h1 id="playlist-title">Originals</h1>
         <button class="theme-btn" id="open-themes-2">🎨</button>
       </header>
       <ul id="song-list-ul"></ul>
     </div>
 
-    <!-- Now Playing View -->
+    <!-- Player View -->
     <div id="player-view" class="view">
       <header>
-        <button class="playlist-btn" id="open-playlists-3">🗓️</button>
+        <button class="playlist-btn" id="back-to-songs">🗓️</button>
         <h1>Now Playing</h1>
         <button class="theme-btn" id="open-themes-3">🎨</button>
       </header>
       <h2 id="player-title"></h2>
-      <div class="cover-art" id="cover-art"></div>
+      <div class="cover-art"></div>
       <div class="controls">
         <button id="restart-btn">⏮️</button>
         <button id="play-pause">▶️</button>
@@ -89,7 +90,7 @@
   <audio id="audio"></audio>
 
   <script>
-    // — Helpers
+    // Helpers
     function formatTime(sec) {
       const m = Math.floor(sec/60), s = Math.floor(sec%60);
       return `${String(m).padStart(2,"0")}:${String(s).padStart(2,"0")}`;
@@ -99,157 +100,154 @@
       return m*60 + s;
     }
 
-    // — Rotating Home Subtitles
-    const subtitles = [
-      "Choose your playlist to begin your journey 🎧",
-      "Curating good noise since always.",
-      "One vibe to rule them all…",
-      "Pick your destiny. Or at least your tunes."
-    ];
-    let subIndex = 0;
-    setInterval(() => {
-      subIndex = (subIndex+1) % subtitles.length;
-      document.getElementById("home-subtitle").textContent = subtitles[subIndex];
-    }, 5000);
-
-    // — Playlist Data
+    // Playlists
     const playlists = {
       originals: [
-        { title:"Slowed Dreams", src:"sloweddreams.mp3", duration:"03:19" },
-        { title:"Pixelated Memories", src:"pixelatedmemories.mp3", duration:"02:35" },
-        { title:"Glittering Heart", src:"glitteringheart.mp3", duration:"02:30" },
-        { title:"Crimson Confessions", src:"crimsonconfessions.mp3", duration:"02:31" },
-        { title:"Battle Scars and Olive Branches", src:"battlescarsandolivebranches.mp3", duration:"01:26" },
-        { title:"Rise and Roar", src:"riseandroar.mp3", duration:"02:07" },
-        { title:"Inside the Bubble", src:"insidethebubble.mp3", duration:"02:40" },
-        { title:"Whisper of Strings", src:"whisperofstrings.mp3", duration:"02:40" },
-        { title:"Whispered Winds", src:"whisperedwinds.mp3", duration:"02:58" },
-        { title:"Raging Fire", src:"ragingfire.mp3", duration:"03:07" }
+        { title: "Slowed Dreams", src: "sloweddreams.mp3", duration: "03:19" },
+        { title: "Pixelated Memories", src: "pixelatedmemories.mp3", duration: "02:35" },
+        { title: "Glittering Heart", src: "glitteringheart.mp3", duration: "02:30" },
+        { title: "Crimson Confessions", src: "crimsonconfessions.mp3", duration: "02:31" },
+        { title: "Battle Scars and Olive Branches", src: "battlescarsandolivebranches.mp3", duration: "01:26" },
+        { title: "Rise and Roar", src: "riseandroar.mp3", duration: "02:07" },
+        { title: "Inside the Bubble", src: "insidethebubble.mp3", duration: "02:40" },
+        { title: "Whisper of Strings", src: "whisperofstrings.mp3", duration: "02:40" },
+        { title: "Whispered Winds", src: "whisperedwinds.mp3", duration: "02:58" },
+        { title: "Raging Fire", src: "ragingfire.mp3", duration: "03:07" }
       ],
       swifties: []
     };
 
-    // — State & Elements
+    // State & Elements
     let currentPlaylist = localStorage.getItem("currentPlaylist") || null;
     let currentTrackIndex = 0;
     let currentTrackLength = 0;
-    const audio         = document.getElementById("audio");
-    const homeView      = document.getElementById("home-view");
-    const playlistView  = document.getElementById("playlist-view");
-    const songListView  = document.getElementById("song-list-view");
-    const playerView    = document.getElementById("player-view");
-    const themeView     = document.getElementById("theme-view");
-    const ulSongs       = document.getElementById("song-list-ul");
-    const playlistTitle = document.getElementById("playlist-title");
-    const titleDisplay  = document.getElementById("player-title");
-    const coverArt      = document.getElementById("cover-art");
-    const progressBar   = document.getElementById("progress-bar");
-    const elapsedSpan   = document.getElementById("elapsed");
-    const durationSpan  = document.getElementById("duration");
-    const remainingSpan = document.getElementById("remaining");
-    const playPauseBtn  = document.getElementById("play-pause");
-    const restartBtn    = document.getElementById("restart-btn");
-    const goBackBtn     = document.getElementById("go-back-btn");
+    const audio        = document.getElementById("audio");
+    const homeView     = document.getElementById("home-view");
+    const playlistView = document.getElementById("playlist-view");
+    const songListView = document.getElementById("song-list-view");
+    const playerView   = document.getElementById("player-view");
+    const themeView    = document.getElementById("theme-view");
+    const ulSongs      = document.getElementById("song-list-ul");
+    const playlistTitle= document.getElementById("playlist-title");
+    const titleDisplay = document.getElementById("player-title");
+    const coverArt     = document.querySelector(".cover-art");
+    const progressBar  = document.getElementById("progress-bar");
+    const elapsedSpan  = document.getElementById("elapsed");
+    const durationSpan = document.getElementById("duration");
+    const remainingSpan= document.getElementById("remaining");
+    const playPauseBtn = document.getElementById("play-pause");
+    const restartBtn   = document.getElementById("restart-btn");
+    const goBackBtn    = document.getElementById("go-back-btn");
 
     function showView(view) {
       [homeView,playlistView,songListView,playerView,themeView]
-        .forEach(v=>v.classList.remove("active"));
+        .forEach(v => v.classList.remove("active"));
       view.classList.add("active");
     }
 
     function populateSongList() {
-      ulSongs.innerHTML="";
+      ulSongs.innerHTML = "";
       playlistTitle.textContent =
-        currentPlaylist.charAt(0).toUpperCase()+currentPlaylist.slice(1);
-      playlists[currentPlaylist].forEach((track,i)=>{
-        const li=document.createElement("li");
-        li.textContent=track.title;
-        li.onclick=()=>loadSong(i);
+        currentPlaylist.charAt(0).toUpperCase() + currentPlaylist.slice(1);
+      playlists[currentPlaylist].forEach((track,i) => {
+        const li = document.createElement("li");
+        li.textContent = track.title;
+        li.onclick = () => loadSong(i);
         ulSongs.appendChild(li);
-        if(i<playlists[currentPlaylist].length-1){
-          const hr=document.createElement("hr");
+        if (i < playlists[currentPlaylist].length - 1) {
+          const hr = document.createElement("hr");
           ulSongs.appendChild(hr);
         }
       });
     }
 
-    function loadSong(idx){
+    function loadSong(idx) {
       const track = playlists[currentPlaylist][idx];
-      currentTrackIndex=idx;
-      currentTrackLength=parseTime(track.duration);
+      currentTrackIndex = idx;
+      currentTrackLength = parseTime(track.duration);
 
-      titleDisplay.textContent=track.title;
-      coverArt.style.backgroundImage="url('default_cover.png')";
-      durationSpan.textContent=track.duration;
-      elapsedSpan.textContent="00:00";
-      remainingSpan.textContent="-"+track.duration;
-      progressBar.style.width="0%";
+      titleDisplay.textContent = track.title;
+      coverArt.style.backgroundImage = "url('default_cover.png')";
+      durationSpan.textContent = track.duration;
+      elapsedSpan.textContent  = "00:00";
+      remainingSpan.textContent= "-" + track.duration;
+      progressBar.style.width  = "0%";
 
-      audio.src=track.src;
-      audio.currentTime=0;
+      audio.src = track.src;
+      audio.currentTime = 0;
       audio.play();
       showView(playerView);
     }
 
-    // — Initial view
-    if(currentPlaylist==="originals"){
+    // Initial view
+    if (currentPlaylist === "originals") {
       populateSongList();
       showView(songListView);
     } else {
       showView(homeView);
     }
 
-    // — Playlist nav
-    ["open-playlists","open-playlists-2","open-playlists-3"]
-      .forEach(id=>document.getElementById(id).onclick=_=>showView(playlistView));
-    document.getElementById("close-playlists").onclick=_=>{
-      localStorage.setItem("currentPlaylist",currentPlaylist);
+    // Playlist navigation
+    document.getElementById("open-playlists").onclick    =
+    document.getElementById("back-to-playlists").onclick =
+    document.getElementById("open-playlists-2").onclick  =
+    document.getElementById("open-playlists-3").onclick  = ()=> showView(playlistView);
+
+    document.getElementById("close-playlists").onclick = ()=> {
+      localStorage.setItem("currentPlaylist", currentPlaylist);
       showView(homeView);
     };
-    document.querySelector("[data-playlist='originals']").onclick=_=>{
-      currentPlaylist="originals";
-      localStorage.setItem("currentPlaylist",currentPlaylist);
+
+    document.querySelector("[data-playlist='originals']").onclick = ()=> {
+      currentPlaylist = "originals";
+      localStorage.setItem("currentPlaylist", currentPlaylist);
       populateSongList();
       showView(songListView);
     };
 
-    // — Theme selector
-    ["open-themes","open-themes-2","open-themes-3"]
-      .forEach(id=>document.getElementById(id).onclick=_=>showView(themeView));
-    document.getElementById("close-themes").onclick=_=>showView(homeView);
+    // Theme selector
+    document.getElementById("open-themes").onclick   =
+    document.getElementById("open-themes-2").onclick =
+    document.getElementById("open-themes-3").onclick = ()=> showView(themeView);
+
+    document.getElementById("close-themes").onclick = ()=> showView(homeView);
+
     document.querySelectorAll("#theme-view li").forEach(li=>{
-      li.onclick=()=>{
-        document.body.className=`theme-${li.dataset.theme}`;
+      li.onclick = ()=> {
+        document.body.className = `theme-${li.dataset.theme}`;
         showView(homeView);
       };
     });
 
-    // — Audio time updates
-    audio.ontimeupdate=_=>{
-      const e=audio.currentTime, r=currentTrackLength-e;
-      elapsedSpan.textContent=formatTime(e);
-      remainingSpan.textContent="-"+formatTime(r);
-      progressBar.style.width=`${(e/currentTrackLength)*100}%`;
+    // Audio updates
+    audio.ontimeupdate = ()=> {
+      const e = audio.currentTime;
+      const r = currentTrackLength - e;
+      elapsedSpan.textContent    = formatTime(e);
+      remainingSpan.textContent  = "-" + formatTime(r);
+      progressBar.style.width    = `${(e/currentTrackLength)*100}%`;
     };
 
-    // — Auto-advance
-    audio.onended=_=>{
-      const nxt=currentTrackIndex+1;
-      if(nxt<playlists[currentPlaylist].length) loadSong(nxt);
+    audio.onended = ()=> {
+      const nxt = currentTrackIndex + 1;
+      if (nxt < playlists[currentPlaylist].length) loadSong(nxt);
     };
 
-    // — Play/pause
-    playPauseBtn.onclick=_=>{
-      if(audio.paused) audio.play(); else audio.pause();
+    // Controls
+    playPauseBtn.onclick = ()=> {
+      if (audio.paused) audio.play();
+      else audio.pause();
     };
-    audio.onplay=_=>playPauseBtn.textContent="⏸️";
-    audio.onpause=_=>playPauseBtn.textContent="▶️";
+    audio.onplay  = ()=> playPauseBtn.textContent = "⏸️";
+    audio.onpause = ()=> playPauseBtn.textContent = "▶️";
 
-    // — Restart & Go Back
-    restartBtn.onclick=_=>{
-      audio.currentTime=0; audio.play();
+    restartBtn.onclick = ()=> {
+      audio.currentTime = 0;
+      audio.play();
     };
-    goBackBtn.onclick=_=>showView(songListView);
+
+    goBackBtn.onclick = ()=> showView(songListView);
+
   </script>
 </body>
 </html>
