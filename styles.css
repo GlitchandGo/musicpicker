@@ -1,9 +1,10 @@
 /* styles.css */
+
 /*---------------------------------------------
-  Theme Variables & Palettes
+  Theme Variables
 ---------------------------------------------*/
 :root {
-  --bg: #fff;
+  --bg: #fff;     
   --text: #000;
   --accent: #000;
   --pulse: rgba(0,0,0,0.2);
@@ -52,13 +53,6 @@
   --btn-gradient: linear-gradient(#ffe6ec,#f7d5cc);
   --btn-text: #5c3a21;
 }
-body.theme-catcafe::after {
-  content:""; position:fixed; inset:0;
-  background-image:
-    radial-gradient(circle, rgba(92,58,33,0.1) 1px, transparent 1px);
-  background-size:30px 30px; opacity:0.05;
-  pointer-events:none;
-}
 
 /* Starlight Terminal */
 .theme-starlight {
@@ -66,11 +60,6 @@ body.theme-catcafe::after {
   --pulse: rgba(0,255,255,0.3);
   --btn-gradient: linear-gradient(#0e0e1a,#1a1a2e);
   --btn-text: #00ffff;
-}
-body.theme-starlight::after {
-  content:""; position:fixed; inset:0;
-  background: url('starfield.png') repeat;
-  opacity:0.1; pointer-events:none;
 }
 
 /* Terracotta Bloom */
@@ -103,13 +92,9 @@ header {
   align-items:center; padding:12px;
   background:var(--accent); color:var(--bg);
 }
-header h1 {
-  margin:0; font-size:16px;
-}
+header h1 { margin:0; font-size:16px; }
 
-/*---------------------------------------------
-  Buttons & Icons
----------------------------------------------*/
+/* Buttons */
 button,
 .theme-btn,
 .play-btn,
@@ -118,51 +103,38 @@ button,
   color:var(--btn-text); border:none;
   border-radius:4px; padding:8px;
   font-size:14px; font-weight:bold;
-  box-shadow:0 4px 8px rgba(0,0,0,0.1);
   cursor:pointer; transition:0.1s;
 }
 .theme-btn,
 .playlist-btn {
-  background:none; box-shadow:none; padding:4px;
+  background:none; padding:4px; box-shadow:none;
   font-size:18px;
 }
 
-/*---------------------------------------------
-  Views
----------------------------------------------*/
+/* Views */
 .view { display:none; padding:16px; }
 .view.active { display:block; }
 
 /* Home */
-.home-content { text-align:center; margin-top:40px; 
-  animation:breathe 4s ease-in-out infinite;
-}
-.home-content h2 { margin:0; font-size:14px; }
+.home-content { text-align:center; margin-top:40px; }
+.home-content h2 { margin-bottom:8px; }
 
-/* Playlist & Song List & Theme */
-#playlist-view ul,
-#song-list-view ul,
-#theme-view ul { list-style:none; padding:0; margin:0; }
-#playlist-view li,
-#song-list-view li,
-#theme-view li {
-  padding:12px 0; cursor:pointer; color:var(--text);
-}
+/* Lists */
+ul { list-style:none; padding:0; margin:0; }
+#playlist-view li { padding:12px 0; cursor:pointer; }
 #playlist-view li.disabled { opacity:0.5; cursor:default; }
-#playlist-view li:not(.disabled):hover,
-#song-list-view li:hover,
-#theme-view li:hover {
-  color:var(--accent);
-}
-#song-list-view hr {
-  margin:0; border:0; border-top:1px solid var(--accent);
-}
+#playlist-view li:not(.disabled):hover { color:var(--accent); }
+#song-list-view li { padding:12px 0; cursor:pointer; }
+#song-list-view li:hover { color:var(--accent); }
+#song-list-view hr { margin:0; border:0; border-top:1px solid var(--accent); }
+#theme-view li { padding:12px 0; cursor:pointer; text-transform:capitalize; }
+#theme-view li:hover { color:var(--accent); }
 
 /* Now Playing */
 #player-view h2 { text-align:center; margin:8px 0; }
 .cover-art {
   width:200px; height:200px; margin:0 auto 16px;
-  background: #ddd url('default_cover.png') center/cover no-repeat;
+  background:#ddd url('default_cover.png') center/cover no-repeat;
   border-radius:4px;
 }
 .controls {
@@ -171,7 +143,7 @@ button,
 }
 .controls button { font-size:18px; }
 
-/* Progress Bar */
+/* Progress */
 .progress-container {
   width:100%; height:6px;
   background:rgba(255,255,255,0.1);
@@ -187,13 +159,5 @@ button,
 /* Time Info */
 .time-info {
   text-align:center; font-size:12px;
-  color:var(--text); margin-bottom:12px;
-}
-
-/*---------------------------------------------
-  Animations
----------------------------------------------*/
-@keyframes breathe {
-  0%,100% { transform: translateY(0); }
-  50%     { transform: translateY(-3px); }
+  margin-bottom:12px;
 }
